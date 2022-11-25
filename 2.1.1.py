@@ -16,7 +16,6 @@ currency_to_rub = {"AZN": 35.68,
                    "USD": 60.66,
                    "UZS": 0.0055, }
 
-
 def take_ten_items(dictionary):
     new_dictionary = {}
     i = 0
