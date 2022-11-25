@@ -325,8 +325,10 @@ class report:
         pdfkit.from_string(pdf_template, 'report.pdf', configuration=config, options={'enable-local-file-access': None})
 
 
-file_name = input("Введите название файла: ")
-profession = input("Введите название профессии: ")
-dataset = DataSet(file_name, profession)
-dataset.print_information()
-report(dataset).generate_pdf()
+def run_program():
+    global profession
+    file_name = input("Введите название файла: ")
+    profession = input("Введите название профессии: ")
+    dataset = DataSet(file_name, profession)
+    dataset.print_information()
+    report(dataset).generate_pdf()

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body style="text-align: center; font-family: Verdana, sans-serif">
+<h1 style="font-size: 30px">
+    Аналитика по зарплатам и городам для профессии {{profession}}
+</h1>
+
+<img src="file:///C:\Users\User\Desktop\новый проект\{{image_file}}" style="width: 100%">
+
+<h2 style="font-size: 25px">
+    Статистика по годам
+</h2>
+
+<table style="border-collapse: collapse; width: 100%; ">
+    <tr>
+        {% for cell in years_list['1']: %}
+        <th style="font-size: 15px; padding: 5px; border: 1px solid black;">
+            {{ cell.value}}
+        </th>
+        {% endfor %}
+    </tr>
+    {% for row in range(2, years_list.max_row + 1): %}
+    <tr>
+        {% for col in range(1, years_list.max_column + 1): %}
+        <td style=" font-size: 15px; padding: 5px; border: 1px solid black">
+            {{ years_list.cell(row, col).value }}
+        </td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<h2 style="font-size: 25px">
+    Статистика по городам
+</h2>
+<div style="display: -webkit-box; -webkit-box-pack: justify">
+    <table style="width: 49%; border-collapse: collapse">
+        <tr>
+            {% for cell in cities_list["A1":"B1"][0]: %}
+            <th style="border: 1px solid black; font-size: 15px; padding: 5px; ">
+                {{cell.value}}
+            </th>
+            {% endfor %}
+        </tr>
+        {% for row in range(2, cities_list.max_row + 1): %}
+        <tr>
+            {% for col in range(1, 3): %}
+            <td style="padding: 5px; border: 1px solid black; font-size: 15px; ">
+                {{ cities_list.cell(row, col).value }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+    <table style="width: 49%; border-collapse: collapse; ">
+        <tr>
+            {% for cell in cities_list["D1":"E1"][0]: %}
+            <th style="padding: 5px; border: 1px solid black; font-size: 15px; ">
+                {{cell.value}}
+            </th>
+            {% endfor %}
+        </tr>
+        {% for row in range(2, cities_list.max_row + 1): %}
+        <tr>
+            {% for col in range(4, 6): %}
+            <td style="padding: 5px; border: 1px solid black; font-size: 15px; ">
+                {{cities_list.cell(row, col).value}}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+</body>
+</html>
