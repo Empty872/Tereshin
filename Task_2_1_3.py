@@ -22,6 +22,16 @@ currency_to_rub = {"AZN": 35.68,
 
 
 def take_ten_items(dictionary):
+    """Берёт 10 первых пар словаря, округляя значения до 4 знаков после запятой
+    Args:
+        dictionary (dict): словарь
+    Returns:
+        dict: обрезанный словарь
+    >>> take_ten_items({"a": 1.69607, "b": 3.555, "c": 4, "d": 0.76534, "e": 6, "f": 7,"g": 8, "h": 9, "i": 10.44432, "j": 11, "k": 12.4433, "l": 13.3, "m": 42.094394})
+    {'a': 1.6961, 'b': 3.555, 'c': 4, 'd': 0.7653, 'e': 6, 'f': 7, 'g': 8, 'h': 9, 'i': 10.4443, 'j': 11}
+    >>> take_ten_items({'a': 1.6961, 'b': 3.555, 'c': 4.839392, 'd': 0.7653, 'e': 6})
+    {'a': 1.6961, 'b': 3.555, 'c': 4.8394, 'd': 0.7653, 'e': 6}
+    """
     new_dictionary = {}
     i = 0
     for key in dictionary:
@@ -33,7 +43,33 @@ def take_ten_items(dictionary):
 
 
 class DataSet:
+    """Составляет базу данных для вакансий.
+
+    Attributes:
+        file_name (string): название файла
+        profession (string): название профессии
+        vacancies_objects (list): список вакансий
+        vacancies_count_by_years (dict): Словарь типа {год : количество вакансий}
+        vacancies_count_by_years_for_profession (dict): Словарь типа {год : количество вакансий определённой профессии}
+        salary_by_years (dict): Словарь типа {год : уровень зарплат}
+        salary_by_years_for_profession (dict): Словарь типа {год : уровень зарплат определённой профессии}
+        vacancies_count_by_cities (dict): Словарь типа {город : количество вакансий}
+        vacancies_share_by_cities (dict): Словарь типа {город : процент вакансий от общего кол-ва}
+        salary_by_cities (dict): Словарь типа {город : уровень зарплат}
+    """
+
     def __init__(self, file_name, profession):
+        """Инициализируект объект DataSet, создаёт различные словари
+        Args:
+            file_name (string): название файла
+            profession (string): название профессии
+        >>> type(DataSet("vacancies.csv", "Аналитик")).__name__
+        'DataSet'
+        >>> DataSet("vacancies.csv", "Аналитик").file_name
+        'vacancies.csv'
+        >>> DataSet("vacancies.csv", "Аналитик").profession
+        'Аналитик'
+        """
         self.file_name = file_name
         self.profession = profession
         headlines, vacancies = self.csv_reader()
@@ -48,6 +84,11 @@ class DataSet:
         self.salary_by_cities = self.get_salary_by_cities()
 
     def csv_reader(self):
+        """Создаёт список вакансий и список их параметров
+        Returns:
+            list: список параметров вакансий
+            list: список вакансий
+        """
         headlines_list = []
         vacancies_list = []
         length = 0
@@ -80,6 +121,13 @@ class DataSet:
         return headlines_list, vacancies_list
 
     def csv_filer(self, reader, list_naming):
+        """Создаёт словарь вакансий и их параметров
+        Args:
+            reader (list): список вакансий
+            list_naming (list): список параметров вакансий
+        Returns:
+            dict: словарь типа {вакансия : параметры}
+        """
         dictionaries_list = []
         for vacancy in reader:
             dictionary = {}
@@ -89,6 +137,11 @@ class DataSet:
         return dictionaries_list
 
     def get_vacancies_count_by_years(self):
+        """
+        Возвращает словарь годов и кол-ва вакансий
+        Returns:
+            dict: Словарь типа {год : количество вакансий}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if vacancy.published_at in dictionary:
@@ -99,6 +152,11 @@ class DataSet:
         return dictionary
 
     def get_vacancies_count_by_years_for_profession(self):
+        """
+        Возвращает словарь годов и кол-ва вакансий определённой профессии
+        Returns:
+            dict: Словарь типа {год : количество вакансий определённой профессии}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if self.profession not in vacancy.name:
@@ -113,6 +171,11 @@ class DataSet:
         return dictionary
 
     def get_salary_by_years(self):
+        """
+        Возвращает словарь годов и уровня зарплат
+        Returns:
+            dict: Словарь типа {год : уровень зарплат}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if vacancy.published_at in dictionary:
@@ -125,6 +188,11 @@ class DataSet:
         return dictionary
 
     def get_salary_by_years_for_profession(self):
+        """
+        Возвращает словарь годов и уровня зарплат определённой профессии
+        Returns:
+            dict: Словарь типа {год : уровень зарплат определённой профессии}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if self.profession not in vacancy.name:
@@ -141,6 +209,11 @@ class DataSet:
         return dictionary
 
     def get_vacancies_count_by_cities(self):
+        """
+        Возвращает словарь городов и кол-ва вакансий
+        Returns:
+            dict: Словарь типа {город : кол-во вакансий}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if vacancy.area_name in dictionary:
@@ -150,6 +223,11 @@ class DataSet:
         return dictionary
 
     def get_vacancies_share_by_cities(self):
+        """
+        Возвращает словарь городов и процента вакансий от общего кол-ва
+        Returns:
+            dict: Словарь типа {город : процент вакансий от общего кол-ва}
+        """
         dictionary = {}
         for key in self.vacancies_count_by_cities:
             if self.vacancies_count_by_cities[key] / len(self.vacancies_objects) >= 0.01:
@@ -159,6 +237,11 @@ class DataSet:
         return new_dictionary
 
     def get_salary_by_cities(self):
+        """
+        Возвращает словарь городов и уровня зарплат
+        Returns:
+            dict: Словарь типа {город : уровень зарплат}
+        """
         dictionary = {}
         for vacancy in self.vacancies_objects:
             if self.vacancies_count_by_cities[vacancy.area_name] / len(self.vacancies_objects) < 0.01:
@@ -174,6 +257,9 @@ class DataSet:
         return new_dictionary
 
     def print_information(self):
+        """
+        Выводит в консоль статистику вакансий
+        """
         print("Динамика уровня зарплат по годам: " + str(self.salary_by_years))
         print("Динамика количества вакансий по годам: " + str(self.vacancies_count_by_years))
         print("Динамика уровня зарплат по годам для выбранной профессии: " + str(
@@ -185,7 +271,30 @@ class DataSet:
 
 
 class Vacancy:
+    """Класс для вакансии
+
+    Attributes:
+        name (string): название
+        salary (string): зарплата
+        area_name (string): город
+        published_at (int): дата публикации
+    """
+
     def __init__(self, dictionary):
+        """Инициализируект объект Vacancy
+        Args:
+            dictionary (dict): словарь
+        >>> type(Vacancy({"name": "Аналитик", "salary_from": 10000, "salary_to": 100000, "salary_currency": "RUR", "area_name": "Москва",  "published_at": "2022-07-05T18:19:30+0300"})).__name__
+        'Vacancy'
+        >>> Vacancy({"name": "Аналитик", "salary_from": 10000, "salary_to": 100000, "salary_currency": "RUR", "area_name": "Москва",  "published_at": "2022-07-05T18:19:30+0300"}).name
+        'Аналитик'
+        >>> Vacancy({"name": "Аналитик", "salary_from": 10000, "salary_to": 100000, "salary_currency": "RUR", "area_name": "Москва",  "published_at": "2022-07-05T18:19:30+0300"}).area_name
+        'Москва'
+        >>> Vacancy({"name": "Аналитик", "salary_from": 10000, "salary_to": 100000, "salary_currency": "RUR", "area_name": "Москва",  "published_at": "2022-07-05T18:19:30+0300"}).salary
+        55000.0
+        >>> Vacancy({"name": "Аналитик", "salary_from": 10000, "salary_to": 100000, "salary_currency": "RUR", "area_name": "Москва",  "published_at": "2022-07-05T18:19:30+0300"}).published_at
+        2022
+        """
         self.name = dictionary["name"]
         self.salary = (float(dictionary["salary_from"]) + float(dictionary["salary_to"])) / 2 * currency_to_rub[
             dictionary["salary_currency"]]
@@ -193,8 +302,24 @@ class Vacancy:
         self.published_at = int(dictionary["published_at"][:4])
 
 
-class report:
+class Report:
+    """Класс для визуализации статистики
+
+    Attributes:
+        profession (string): профессия
+        years_list_headers (list): список заголовков, связынных с годами
+        years_list_columns (list): список годов и параметров, связанных с ними
+        cities_list_headers (list): список заголовков, связынных с городами
+        cities_list_columns (list): список городов и параметров, связанных с ними
+        years_list_widths (list): список ширин для таблицы по годам
+        cities_list_widths (list): список ширин для таблицы по городам
+    """
+
     def __init__(self, dataset):
+        """Инициализируект объект Report, формирует различные данные
+        Args:
+            dat1aset (DataSet): dataset
+        """
         self.profession = dataset.profession
         self.years_list_headers = (
             "Год", "Средняя зарплата", f"Средняя зарплата - {profession}", "Количество вакансий",
@@ -223,6 +348,12 @@ class report:
                 self.cities_list_widths[i] = max(len(str(cell)) + 2, self.cities_list_widths[i])
 
     def set_border(self, ws, width, height):
+        """Устанавливает рамки для таблицы
+        Args:
+            ws (openpyxl.Workbook()): Excel лист
+            width (float): ширина
+            height (float) высота
+        """
         cell_range = f'A1:{get_column_letter(width)}{height}'
         thin = Side(border_style="thin", color="000000")
         for row in ws[cell_range]:
@@ -230,12 +361,28 @@ class report:
                 cell.border = Border(top=thin, left=thin, right=thin, bottom=thin)
 
     def clear_column(self, ws, column):
+        """Удаляет рамки для столбца таблицы
+        Args:
+            ws (openpyxl.Workbook()): Excel лист
+            column (string): буква, соответствующая столбцу
+        """
         empty = Side(border_style=None)
         for cell in ws[column]:
             cell.border = Border(top=empty, bottom=empty)
 
     def get_vertical_chart(self, title, parameter_1, parameter_1_name, parameter_2,
                            parameter_2_name, labels, fig, number):
+        """Создаёт вертикальную диаграмму
+        Args:
+            title (string): Название
+            parameter_1 (list): первый параметр
+            parameter_1_name (string): название первого параметра
+            parameter_2 (list): второй параметр
+            parameter_2_name (string): название втрого параметра
+            labels (list): лейблы
+            fig (plt.figure()): фигура
+            number (int): расположение графика на листе
+        """
         x = np.arange(len(labels))
         width = 0.35
         plt.rcParams['font.size'] = '8'
@@ -248,6 +395,13 @@ class report:
         ax.legend()
 
     def get_horizontal_chart(self, title, parameter, labels, fig):
+        """Создаёт вертикальную диаграмму
+        Args:
+            title (string): Название
+            parameter (list): параметр
+            labels (list): лейблы
+            fig (plt.figure()): фигура
+        """
         plt.rcParams['font.size'] = '8'
         ax = fig.add_subplot(223)
         labels = [city.replace(' ', '\n').replace('-', '-\n') for city in labels]
@@ -259,6 +413,13 @@ class report:
         ax.set_title(title)
 
     def get_pie_chart(self, title, parameter, labels, fig):
+        """Создаёт вертикальную диаграмму
+        Args:
+            title (string): Название
+            parameter (list): параметр
+            labels (list): лейблы
+            fig (plt.figure()): фигура
+        """
         plt.rcParams['font.size'] = '6'
         labels.insert(0, "Другие")
         parameter.insert(0, 1 - sum(parameter))
@@ -270,6 +431,11 @@ class report:
         plt.savefig('graph.png')
 
     def generate_excel(self):
+        """Создаёт вертикальную диаграмму
+        Returns:
+            years_list (wb): лист для таблицы по годам
+            cities_list (wb): лист для тыблицы по городам
+        """
         wb = openpyxl.Workbook()
         years_list = wb.active
         years_list.title = "Статистика по годам"
@@ -293,9 +459,10 @@ class report:
         self.set_border(cities_list, len(self.cities_list_headers), len(self.cities_list_columns[0]) + 1)
         self.clear_column(cities_list, 'C')
         wb.save('report.xlsx')
-        return [years_list, cities_list]
+        return years_list, cities_list
 
     def generate_image(self):
+        """Генерирует изображение"""
         fig = plt.figure()
         self.get_vertical_chart("Уровень зарплат по годам", self.years_list_columns[1], "средняя з/п",
                                 self.years_list_columns[2], f"з/п {self.profession}", self.years_list_columns[0], fig,
@@ -310,6 +477,7 @@ class report:
         plt.savefig('graph.png')
 
     def generate_pdf(self):
+        """Генерирует pdf документ"""
         years_list, cities_list = self.generate_excel()
         self.generate_image()
         for cell in cities_list['E']:
@@ -326,9 +494,10 @@ class report:
 
 
 def run_program():
+    """Запускает программу"""
     global profession
     file_name = input("Введите название файла: ")
     profession = input("Введите название профессии: ")
     dataset = DataSet(file_name, profession)
     dataset.print_information()
-    report(dataset).generate_pdf()
+    Report(dataset).generate_pdf()

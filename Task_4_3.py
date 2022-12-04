@@ -3,7 +3,8 @@ import prettytable
 from prettytable import PrettyTable
 
 
-def check_parametres():
+def check_parameters():
+    """Проверяет входные данные и предпринимает меры, в случае необходимости"""
     if len(filter_attribute) == 1 and filter_attribute[0] != "":
         print("Формат ввода некорректен")
         exit()
@@ -21,6 +22,16 @@ def check_parametres():
 
 
 def number_processing(number):
+    """Изменяет пормат числа с XXXXXXX на X XXX XXX
+    Args:
+        number (int): число
+    Returns:
+         string: число формата X XXX XXX
+    >>> number_processing(7997908)
+    '7 997 908'
+    >>> number_processing(30)
+    '30'
+    """
     number = str(int(float(number)))
     firstDigitCount = len(number) % 3
     tripletsCount = len(number) // 3
@@ -34,11 +45,25 @@ def number_processing(number):
 
 
 def date_processing(date):
+    """Изменяет пормат даты
+    Args:
+        date (string): дата
+    Returns:
+         string: дата нцжного формата
+    >>> date_processing("2022-07-05T18:19:30+0300")
+    '05.07.2022'
+    """
     newDate = date[8: 10] + "." + date[5: 7] + "." + date[: 4]
     return newDate
 
 
 def word_processing(string):
+    """Возвращает строку без лишних символов
+        Args:
+            string (string): строка
+        Returns:
+             string: изменённая строка
+        """
     new_string = re.compile(r'<[^>]+>').sub('', string).replace(" ", " ").replace(" ", " ").replace("  ", " ").replace(
         "  ", " ").strip()
     if new_string in translator:
@@ -47,6 +72,13 @@ def word_processing(string):
 
 
 def csv_reader(file_name):
+    """Создаёт список вакансий и список их параметров
+    Args:
+        file_name (string): название файла
+    Returns:
+        list: список параметров вакансий
+        list: список вакансий
+    """
     headlines_list = []
     vacancies_list = []
     length = 0
@@ -80,6 +112,13 @@ def csv_reader(file_name):
 
 
 def csv_filer(reader, list_naming):
+    """Создаёт словарь вакансий и их параметров
+    Args:
+        reader (list): список вакансий
+        list_naming (list): список параметров вакансий
+    Returns:
+        dict: словарь типа {вакансия : параметры}
+    """
     dictionaries_list = []
     for vacancy in reader:
         dictionary = {}
@@ -90,6 +129,12 @@ def csv_filer(reader, list_naming):
 
 
 def formatter(row):
+    """Форматирует ряд
+    Args:
+        row (dict): словарь данных ряда
+    Returns:
+        dict: отформатированный словарь данных
+    """
     new_dictionary = {}
     minSalary = ""
     maxSalary = ""
@@ -114,6 +159,15 @@ def formatter(row):
 
 
 def cut_table(table, start_and_end, headlines, count):
+    """Обрезает таблицу
+    Args:
+        table (PrettyTable): таблица
+        start_and_end (string): строка содержащая номера первого и последнего рядов
+        headlines (string): нужные столбцы
+        count (int) количество рядов
+    Returns:
+        table: обрезанная таблица
+    """
     start = 0
     end = count
     start_and_end = start_and_end.split(" ")
@@ -132,6 +186,13 @@ def cut_table(table, start_and_end, headlines, count):
 
 
 def row_pass_filter(dictionary, filter_attribute):
+    """проверяет, проходит ли ряд фильтрацию по аттрибуту
+    Args:
+        dictionary (dict) словарь
+        filter_attribute (string) аттрибут фильтрации
+    Returns:
+        bool: значение, означающее, проходит ли ряд филтрацию
+    """
     for key in dictionary:
         if filter_attribute[0] == "Оклад":
             if key == "Нижняя граница вилки оклада":
@@ -154,6 +215,14 @@ def row_pass_filter(dictionary, filter_attribute):
 
 
 def sort_data_vacancies(data_vacancies, attribute, need_to_reverse):
+    """проводит сортировку
+    Args:
+        data_vacancies (list) список вакансий
+        attribute (string) аттрибут сортировки
+        need_to_reverse (string) нужно ли сортировать
+    Returns:
+        list: отсортированный список
+    """
     if need_to_reverse == "Да":
         need_to_reverse = True
     else:
@@ -184,6 +253,11 @@ def sort_data_vacancies(data_vacancies, attribute, need_to_reverse):
 
 
 def print_vacancies(data_vacancies, dic_naming):
+    """Печатает таблицу
+    Args:
+        data_vacancies (list) список вакансий
+        dic_naming (dict) словарь
+    """
     table = PrettyTable(hrules=prettytable.ALL, align='l')
     is_first_row = True
     number = 0
@@ -258,6 +332,7 @@ currency_to_rub = {"Манаты": 35.68,
 import csv
 
 def run_program():
+    """Запускает программу"""
     global sort_attribute, need_to_reverse, diapason, needed_columns, filter_attribute
     file_name = input("Введите название файла: ")
     filter_attribute = input("Введите параметр фильтрации: ")
@@ -266,6 +341,6 @@ def run_program():
     diapason = input("Введите диапазон вывода: ")
     needed_columns = input("Введите требуемые столбцы: ")
     filter_attribute = filter_attribute.split(": ")
-    check_parametres()
+    check_parameters()
     headlines, vacancies = csv_reader(file_name)
     print_vacancies(csv_filer(vacancies, headlines), translator)
