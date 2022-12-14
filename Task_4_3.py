@@ -1,3 +1,4 @@
+import cProfile
 import re
 import prettytable
 from prettytable import PrettyTable
@@ -43,7 +44,16 @@ def number_processing(number):
         newNumber += number[firstDigitCount + i * 3: firstDigitCount + (i + 1) * 3]
     return newNumber
 
-
+def profile(func):
+    """Decorator for run function profile"""
+    def wrapper(*args, **kwargs):
+        profile_filename = func.__name__ + '.prof'
+        profiler = cProfile.Profile()
+        result = profiler.runcall(func, *args, **kwargs)
+        profiler.dump_stats(profile_filename)
+        return result
+    return wrapper
+@profile
 def date_processing(date):
     """Изменяет пормат даты
     Args:
