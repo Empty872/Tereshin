@@ -1,5 +1,8 @@
 import cProfile
 import re
+import datetime as dt
+
+import dateparser as dateparser
 import prettytable
 from prettytable import PrettyTable
 
@@ -44,27 +47,40 @@ def number_processing(number):
         newNumber += number[firstDigitCount + i * 3: firstDigitCount + (i + 1) * 3]
     return newNumber
 
-def profile(func):
-    """Decorator for run function profile"""
-    def wrapper(*args, **kwargs):
-        profile_filename = func.__name__ + '.prof'
-        profiler = cProfile.Profile()
-        result = profiler.runcall(func, *args, **kwargs)
-        profiler.dump_stats(profile_filename)
-        return result
-    return wrapper
-@profile
-def date_processing(date):
+
+def date_processing_1(date):
     """Изменяет пормат даты
     Args:
         date (string): дата
     Returns:
          string: дата нцжного формата
-    >>> date_processing("2022-07-05T18:19:30+0300")
+    >>> date_processing_1("2022-07-05T18:19:30+0300")
     '05.07.2022'
     """
     newDate = date[8: 10] + "." + date[5: 7] + "." + date[: 4]
+
     return newDate
+
+
+# def date_processing_2(date):
+#     new_date = dt.datetime.strptime(date, '%Y-%m-%dT%H:%M:%S%z')
+#     day = str(new_date.day) if len(str(new_date.day)) == 2 else "0" + str(new_date.day)
+#     month = str(new_date.month) if len(str(new_date.month)) == 2 else "0" + str(new_date.month)
+#     year = str(new_date.year)
+#     return day + "." + month + "." + year
+#
+#
+# def date_processing_3(date):
+#     new_date = date.split('-')
+#     return new_date[2][:2] + "." + new_date[1] + "." + new_date[0]
+#
+#
+# def date_processing_4(date):
+#     new_date = dateparser.parse(date)
+#     day = str(new_date.day) if len(str(new_date.day)) == 2 else "0" + str(new_date.day)
+#     month = str(new_date.month) if len(str(new_date.month)) == 2 else "0" + str(new_date.month)
+#     year = str(new_date.year)
+#     return day + "." + month + "." + year
 
 
 def word_processing(string):
@@ -149,6 +165,7 @@ def formatter(row):
     minSalary = ""
     maxSalary = ""
     beforeTaxes = ""
+
     for key in row:
         if key == "Нижняя граница вилки оклада":
             minSalary = number_processing(row[key])
@@ -162,9 +179,13 @@ def formatter(row):
         elif key == "Идентификатор валюты оклада":
             new_dictionary["Оклад"] = f"{minSalary} - {maxSalary} ({row[key]}) ({beforeTaxes})"
         elif key == "Дата публикации вакансии":
-            new_dictionary[key] = date_processing(row[key])
+            new_dictionary[key] = date_processing_1(row[key])
+            # date_processing_2(row[key])
+            # date_processing_3(row[key])
+            # date_processing_4(row[key])
         else:
             new_dictionary[key] = row[key]
+
     return new_dictionary
 
 
@@ -212,7 +233,7 @@ def row_pass_filter(dictionary, filter_attribute):
                 if int(float(filter_attribute[1])) > int(float(dictionary[key])):
                     return False
         elif filter_attribute[0] == "Дата публикации вакансии" == key:
-            if filter_attribute[1] != date_processing(dictionary[key]):
+            if filter_attribute[1] != date_processing_1(dictionary[key]):
                 return False
         elif filter_attribute[0] == key == "Навыки":
             for element in filter_attribute[1].split(", "):
@@ -341,7 +362,10 @@ currency_to_rub = {"Манаты": 35.68,
                    "Узбекский сум": 0.0055, }
 import csv
 
+
 def run_program():
+    pr = cProfile.Profile()
+    pr.enable()
     """Запускает программу"""
     global sort_attribute, need_to_reverse, diapason, needed_columns, filter_attribute
     file_name = input("Введите название файла: ")
@@ -354,3 +378,5 @@ def run_program():
     check_parameters()
     headlines, vacancies = csv_reader(file_name)
     print_vacancies(csv_filer(vacancies, headlines), translator)
+    pr.disable()
+    pr.print_stats()
