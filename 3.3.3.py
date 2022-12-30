@@ -6,11 +6,23 @@ pd.set_option("display.max_columns", None)
 
 
 class hh_parser:
+    """
+    Класс для парсинга вакансий с hh
+    Attributes:
+        info (dict): словарь для формирования csv-файла с названием профессии, зарплатой, местностью и датой публикации
+    """
+
     def __init__(self):
+        """
+        Инициализирует класс hh_parser
+        """
         self.info = {'name': [], 'salary_from': [], 'salary_to': [], 'salary_currency': [], 'area_name': [],
                      'published_at': []}
 
     def get_data(self):
+        """
+        Запрашивает данные с сайта hh.ru и записывает их в словарь
+        """
         for date_from in ['2022-12-20T00:00:00', '2022-12-20T06:00:00', '2022-12-20T12:00:00', '2022-12-20T18:00:00',
                           '2022-12-21T00:00:00']:
             date_to = '2022-12-21T00:00:00'
@@ -37,6 +49,9 @@ class hh_parser:
                     self.info['published_at'].append(item['published_at'])
 
     def create_csv(self):
+        """
+        На основе сформированного словаря создает csv-файл
+        """
         df = pd.DataFrame(self.info)
         df.to_csv('hh.csv')
 

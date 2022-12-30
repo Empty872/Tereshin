@@ -8,7 +8,22 @@ pd.set_option("display.max_columns", None)
 
 
 class CurrencyReader:
+    """
+    Сохраняет коэффициенты валют для конвертации
+    Attributes:
+        file_name (string) : название файла
+        data (DataFrame) : все данные из csv-файла
+        min_date (datetime) : минимальное время из файла
+        max_date (datetime) : максимальное время из файла
+        date_currency_dict (dict) : словарь - валюта : коэффициент
+    """
+
     def __init__(self, file_name):
+        """
+        Инициализирует объект класса CurrencyReader
+        Args:
+             file_name (string) : название файла
+        """
         self.file_name = file_name
         self.data = pd.read_csv(file_name)
         self.min_date = datetime.strptime(self.data['published_at'].min(), '%Y-%m-%dT%H:%M:%S%z')
@@ -21,6 +36,8 @@ class CurrencyReader:
         self.date_currency_dict.pop("RUR")
 
     def read_xml(self):
+        """По api считывает xml-файлы и записывает данные о коэффициентах валют в словарь
+                """
         for data in rrule.rrule(rrule.MONTHLY, dtstart=self.min_date, until=self.max_date):
             tree = ET.parse(
                 urlopen(f'https://www.cbr.ru/scripts/XML_daily.asp?date_req=28/{data.strftime("%m/%Y")}d=1'))

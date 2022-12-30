@@ -6,14 +6,32 @@ pd.set_option("display.max_columns", None)
 
 
 class Converter:
+    """
+    Класс для конвертации валют в рубли
+    Attributes:
+        csv_currencies (DataFrame): csv-файл с коэффициентами
+        currencies (dict): все доступные валюты
+        csv_file (DataFrame): все данные из csv-файла
+        data (dict): данные для формирования итогового отформатированного csv-файла
+    """
 
     def __init__(self, coefficient_file, file_name, currencies):
+        """
+        Инициализирует класс Converter
+        Args:
+            coefficient_file (string): название csv-файла с коэффициентами валют
+            file_name (string): название csv_file для дальнейшего редактирования
+            currencies (dict): все доступные валюты
+        """
         self.csv_currencies = pd.read_csv(coefficient_file)
         self.currencies = currencies
         self.csv_file = pd.read_csv(file_name)
         self.data = {"name": [], "salary": [], "area_name": [], "published_at": []}
 
     def convert(self):
+        """
+        Конвертирует валюты
+        """
         for index, row in self.csv_file.iterrows():
             if len(self.data['name']) >= 100:
                 break
@@ -37,8 +55,11 @@ class Converter:
             self.data["published_at"].append(row["published_at"])
 
     def create_csv(self):
+        """
+        Формирует csv-файл с отформатированными данными
+        """
         result_csv_file = pd.DataFrame(self.data)
-        result_csv_file.to_csv("vacancies_formatted_3_4_1.csv")
+        result_csv_file.to_csv("vacancies_formatted_3_3_2.csv")
 
 
 currencies = CurrencyReader("vacancies_dif_currencies.csv").date_currency_dict
